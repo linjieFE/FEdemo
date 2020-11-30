@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaterFall</title>
+    <style>
+        #container{
+          width:100%;
+          height:200px;
+          line-height: 200px;
+          background-color: aqua;
+          color:red;
+          text-align: center;
+        }
+      </style>
+</head>
+<body>
+  
+  <div id="container"></div>
+  <script>      
+      let count=0;
+      let container = document.querySelector("#container");
+      /**
+       *  @param immediate 是否立即执行
+       *  @param func 要执行的函数
+       *  @param wait  时间
+      */
+      function debounce(func,wait,immediate){
+        let timer=null;//时间戳 每次setTimeout 时间戳会累计返回次数        
+        return function(){
+          let args= arguments // 健壮性，获取事件实参 如补获onmouse事件event
+
+          let context = this // 健壮性，改变 this指针 把this指针指向方法体，#container
+          
+          clearTimeout(timer)
+          // console.log(timer)
+          timer =setTimeout(function(){
+            func.apply(context,args)
+          },wait)
+        }
+      }
+      
+      container.onmousemove = debounce(doSomeTing,300)
+
+      function doSomeTing(e){  
+        console.log(e)
+        console.log(this,'this指针指向window')
+        container.innerHTML=count++
+      }
+    
+    
+    
+    
+    
+    
+    </script>
+</body>
+</html>
