@@ -27,21 +27,42 @@
        *  @param wait  时间
       */
       function debounce(func,wait,immediate){
-        let timer=null;//时间戳 每次setTimeout 时间戳会累计返回次数        
+        let timer;//时间戳 每次setTimeout 时间戳会累计返回次数        
         return function(){
           let args= arguments // 健壮性，获取事件实参 如补获onmouse事件event
-
           let context = this // 健壮性，改变 this指针 把this指针指向方法体，#container
           
-          clearTimeout(timer)
-          // console.log(timer)
-          timer =setTimeout(function(){
-            func.apply(context,args)
-          },wait)
+          if(timer){clearTimeout(timer)};
+
+          if(immediate){
+            //鼠标进来立即执行
+            /** !null =true ，有数字时间戳时false
+             *  故只有第一次执行时间为null => 取反为 true 即：没有值的时候会立即被
+            */
+            let callNow = !timer
+            timer = setTimeout(()=>{
+              /**
+               * 触发首次 onmove 时 callNow 为null =>取反为true, 
+               * setTimeout 执行后返回了新时间戳, 此后timer赋值，滑动动作未停止前 callNow 则一直为false。
+               * 除非停止动作时间间隔超过 wait 且设定内没有再触发动作 ，则时间戳重新 赋为 null。
+              */
+              timer = null
+            },wait)
+
+            console.log(timer,'timer',callNow)
+
+            if(callNow) func.apply(context,args)
+          }else{
+            //鼠标进来不立即执行，等在300秒执行
+            // console.log(timer)
+            timer =setTimeout(function(){
+              func.apply(context,args)
+            },wait)
+          }  
         }
       }
       
-      container.onmousemove = debounce(doSomeTing,300)
+      container.onmousemove = debounce(doSomeTing,300,true)
 
       function doSomeTing(e){  
         console.log(e)
